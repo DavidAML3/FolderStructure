@@ -9,10 +9,13 @@ import SwiftUI
 
 struct PostView: View {
     let userId: Int
-    @StateObject var viewModel = PostViewModel()
+    @StateObject var interactor = PostInteractor()
+    @StateObject var presenter = PostPresenter()
+    
+    @State private var posts: [Post] = []
     
     var body: some View {
-        List(viewModel.posts) { post in
+        List(posts) { post in
             VStack(alignment: .leading) {
                 Text(post.title)
                     .font(.headline)
@@ -24,7 +27,9 @@ struct PostView: View {
         }
         .navigationTitle("Posts")
         .onAppear {
-            viewModel.fetchPosts(for: userId)
+            interactor.fetchPosts(for: userId) { fetchedPosts in
+                self.posts = fetchedPosts
+            }
         }
     }
 }

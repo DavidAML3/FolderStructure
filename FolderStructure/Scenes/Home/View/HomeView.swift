@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject var viewModel = HomeViewModel()
+    @StateObject var interactor = HomeInteractor()
+    @StateObject var presenter = HomePresenter()
+    @StateObject var router = HomeRouter()
+    
+    @State private var users: [User] = []
     
     var body: some View {
         NavigationView {
-            List(viewModel.users) { user in
+            List(users) { user in
                 NavigationLink(destination: PostView(userId: user.id)) {
                     VStack(alignment: .leading) {
                         Text(user.name)
@@ -27,7 +31,9 @@ struct HomeView: View {
             .navigationTitle("Users")
         }
         .onAppear {
-            viewModel.fetchUsers()
+            interactor.fetchUsers { users in
+                self.users = presenter.present(users: users)
+            }
         }
     }
 }
